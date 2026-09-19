@@ -409,11 +409,9 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
     <strong>PRICE: ₦44,000</strong>
   </p>
 
-  <form class="order-form" id="orderForm" action="https://api.web3forms.com/submit" method="POST">
-    <input type="hidden" name="access_key" value="cf1cee92-5c74-44ae-927c-df049744a7cc">
-    <input type="hidden" name="subject" value="New Y13 Smart Watch Order">
-    <input type="hidden" name="from_name" value="Y13 Smart Watch Landing Page">
-    <input type="hidden" name="redirect" id="redirectField" value="thank-you.html">
+  <form class="order-form" id="orderForm" action="https://formspree.io/f/meaqkdnr" method="POST">
+    <input type="hidden" name="_subject" value="New Y13 Smart Watch Order">
+    <input type="hidden" name="page_source" value="Y13 Smart Watch Landing Page">
 
     <input type="text" name="Full Name" class="cart-field" placeholder="Full Name*" required>
     <input type="tel" name="Phone" class="cart-field" placeholder="Phone*" required>
@@ -440,11 +438,6 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 
   let orderCompleted = false;
   let cartAbandonTracked = false;
-
-  // Build an absolute URL for the redirect field, in case the browser
-  // ever falls back to a plain (non-JS) form submission.
-  document.getElementById('redirectField').value =
-    window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'thank-you.html';
 
   function cartFieldsFilled() {
     return cartFields.every(el => el.value.trim().length > 0);
@@ -492,14 +485,14 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
         headers: { 'Accept': 'application/json' },
         body: new FormData(form)
       });
-      const data = await res.json();
-      if (data.success) {
+      if (res.ok) {
         orderCompleted = true;
         window.location.href = 'thank-you.html';
         return;
       }
       // Show the real reason it failed, instead of a generic message.
-      errorMsg.textContent = data.message || 'Submission was rejected. Please try again or contact us directly.';
+      const data = await res.json().catch(() => ({}));
+      errorMsg.textContent = data.error || 'Submission was rejected. Please try again or contact us directly.';
       errorMsg.style.display = 'block';
       trackAbandonedCart('submission_failed');
     } catch (err) {
